@@ -1,34 +1,37 @@
+import java.util.concurrent.*;
+
 public class AreaAndPerimeterOfCircle {
 
-    public static void main(String [] a)
-    {
-        Area area = new Area(12);
-        Thread thread1 = new Thread(area);
-        thread1.start();
-        Perimeter perimeter = new Perimeter(12);
-        Thread thread2 = new Thread(perimeter);
-        thread2.start();
+    public static void main(String [] a) throws ExecutionException, InterruptedException {
+        ExecutorService service=Executors.newFixedThreadPool(2);
+        Future<Double> f1=service.submit(new Area(12.00));
+        Future<Double> f2=service.submit(new Perimeter(12.00));
+        System.out.println("The area is "+f1.get());
+        System.out.println("The perimeter is "+f2.get());
+        service.shutdown();
     }
 }
-class Perimeter implements Runnable{
+class Perimeter implements Callable<Double>{
     double radius;
     public Perimeter(double r)
     {
         this.radius=r;
     }
-    public void run(){
+    @Override
+    public Double call() throws Exception{
         double perimeter=this.radius*3.14;
-        System.out.println("The area is "+perimeter*2);
+        return (perimeter*2);
     }
 }
-class Area implements Runnable{
+class Area implements Callable<Double>{
     double radius;
     public Area(double r)
     {
         this.radius=r;
     }
-    public void run(){
+    @Override
+    public Double call() throws Exception{
         double area=this.radius*this.radius;
-        System.out.println("The area is "+area*3.14);
+        return (area*3.14);
     }
 }
